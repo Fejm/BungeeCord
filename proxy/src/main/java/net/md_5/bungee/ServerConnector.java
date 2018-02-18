@@ -175,12 +175,7 @@ public class ServerConnector extends PacketHandler
         {
             ch.write( message );
         }
-
-        if ( user.getSettings() != null )
-        {
-            ch.write( user.getSettings() );
-        }
-
+        
         if ( user.getForgeClientHandler().getClientModList() == null && !user.getForgeClientHandler().isHandshakeComplete() ) // Vanilla
         {
             user.getForgeClientHandler().setHandshakeComplete();
@@ -188,59 +183,30 @@ public class ServerConnector extends PacketHandler
 
         if ( user.getServer() == null )
         {
-            // Once again, first connection
-            user.setClientEntityId( login.getEntityId() );
-            user.setServerEntityId( login.getEntityId() );
 
             // Set tab list size, this sucks balls, TODO: what shall we do about packet mutability
             Login modLogin = new Login( login.getEntityId(), login.getGameMode(), (byte) login.getDimension(), login.getDifficulty(),
                     (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.isReducedDebugInfo() );
 
             user.unsafe().sendPacket( modLogin );
-
-            ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
-            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
-            user.unsafe().sendPacket( new PluginMessage( "MC|Brand", DefinedPacket.toArray( brand ), handshakeHandler.isServerForge() ) );
-            brand.release();
-
             user.setDimension( login.getDimension() );
+            
         } else
         {
             user.getServer().setObsolete( true );
             user.getTabListHandler().onServerChange();
 
-            Scoreboard serverScoreboard = user.getServerSentScoreboard();
-            for ( Objective objective : serverScoreboard.getObjectives() )
-            {
-                user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), objective.getType(), (byte) 1 ) );
-            }
-            for ( Score score : serverScoreboard.getScores() )
-            {
-                user.unsafe().sendPacket( new ScoreboardScore( score.getItemName(), (byte) 1, score.getScoreName(), score.getValue() ) );
-            }
-            for ( Team team : serverScoreboard.getTeams() )
-            {
-                user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
-            }
-            serverScoreboard.clear();
-
-            for ( UUID bossbar : user.getSentBossBars() )
-            {
-                // Send remove bossbar packet
-                user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.BossBar( bossbar, 1 ) );
-            }
-            user.getSentBossBars().clear();
-
             user.setDimensionChange( true );
-            if ( login.getDimension() == user.getDimension() )
-            {
-                user.unsafe().sendPacket( new Respawn( ( login.getDimension() >= 0 ? -1 : 0 ), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
-            }
-
-            user.setServerEntityId( login.getEntityId() );
-            user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+            
             user.setDimension( login.getDimension() );
+            
+            Login modLogin = new Login( login.getEntityId(), login.getGameMode(), (byte) ( login.getDimension() >= 0 ? -1 : 0 ), login.getDifficulty(),
+                    (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.isReducedDebugInfo() );
 
+            user.unsafe().sendPacket( modLogin );
+
+            user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+            
             // Remove from old servers
             user.getServer().disconnect( "Quitting" );
         }
@@ -258,7 +224,6 @@ public class ServerConnector extends PacketHandler
         // TODO: Move this to the connected() method of DownstreamBridge
         target.addPlayer( user );
         user.getPendingConnects().remove( target );
-        user.setServerJoinQueue( null );
         user.setDimensionChange( false );
 
         user.setServer( server );
