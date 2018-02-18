@@ -383,28 +383,6 @@ public class DownstreamBridge extends PacketHandler
     }
 
     @Override
-    public void handle(BossBar bossBar)
-    {
-        switch ( bossBar.getAction() )
-        {
-            // Handle add bossbar
-            case 0:
-                con.getSentBossBars().add( bossBar.getUuid() );
-                break;
-            // Handle remove bossbar
-            case 1:
-                con.getSentBossBars().remove( bossBar.getUuid() );
-                break;
-        }
-    }
-
-    @Override
-    public void handle(Respawn respawn)
-    {
-        con.setDimension( respawn.getDimension() );
-    }
-
-    @Override
     public String toString()
     {
         return "[" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
