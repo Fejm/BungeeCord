@@ -79,9 +79,6 @@ public final class UserConnection implements ProxiedPlayer
     private ServerConnection server;
     @Getter
     @Setter
-    private int dimension;
-    @Getter
-    @Setter
     private boolean dimensionChange = true;
     @Getter
     private final Collection<ServerInfo> pendingConnects = new HashSet<>();

@@ -175,7 +175,6 @@ public class ServerConnector extends PacketHandler
                     (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.isReducedDebugInfo() );
 
             user.unsafe().sendPacket( modLogin );
-            user.setDimension( login.getDimension() );
             
         } else
         {
@@ -183,8 +182,6 @@ public class ServerConnector extends PacketHandler
             user.getTabListHandler().onServerChange();
 
             user.setDimensionChange( true );
-            
-            user.setDimension( login.getDimension() );
             
             Login modLogin = new Login( login.getEntityId(), login.getGameMode(), (byte) ( login.getDimension() >= 0 ? -1 : 0 ), login.getDifficulty(),
                     (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.isReducedDebugInfo() );
