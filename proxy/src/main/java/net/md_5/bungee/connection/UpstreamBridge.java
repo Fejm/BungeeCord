@@ -210,11 +210,6 @@ public class UpstreamBridge extends PacketHandler
             throw CancelSendSignal.INSTANCE;
         }
 
-        // TODO: Unregister as well?
-        if ( PluginMessage.SHOULD_RELAY.apply( pluginMessage ) )
-        {
-            con.getPendingConnection().getRelayMessages().add( pluginMessage );
-        }
     }
 
     @Override

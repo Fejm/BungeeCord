@@ -170,11 +170,6 @@ public class ServerConnector extends PacketHandler
                 ch.write( packetQueue.poll() );
             }
         }
-
-        for ( PluginMessage message : user.getPendingConnection().getRelayMessages() )
-        {
-            ch.write( message );
-        }
         
         if ( user.getForgeClientHandler().getClientModList() == null && !user.getForgeClientHandler().isHandshakeComplete() ) // Vanilla
         {

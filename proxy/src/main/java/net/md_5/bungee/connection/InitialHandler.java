@@ -77,8 +77,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     @Getter
     private LoginRequest loginRequest;
     private EncryptionRequest request;
-    @Getter
-    private final List<PluginMessage> relayMessages = new BoundedArrayList<>( 128 );
     private State thisState = State.HANDSHAKE;
     private final Unsafe unsafe = new Unsafe()
     {
@@ -126,16 +124,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     public void exception(Throwable t) throws Exception
     {
         disconnect( ChatColor.RED + Util.exception( t ) );
-    }
-
-    @Override
-    public void handle(PluginMessage pluginMessage) throws Exception
-    {
-        // TODO: Unregister?
-        if ( PluginMessage.SHOULD_RELAY.apply( pluginMessage ) )
-        {
-            relayMessages.add( pluginMessage );
-        }
     }
 
     @Override

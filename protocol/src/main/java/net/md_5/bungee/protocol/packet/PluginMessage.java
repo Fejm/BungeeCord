@@ -21,15 +21,6 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 public class PluginMessage extends DefinedPacket
 {
 
-    public static final Predicate<PluginMessage> SHOULD_RELAY = new Predicate<PluginMessage>()
-    {
-        @Override
-        public boolean apply(PluginMessage input)
-        {
-            return input.getTag().equals( "REGISTER" ) || input.getTag().equals( "MC|Brand" );
-        }
-    };
-    //
     private String tag;
     private byte[] data;
 
